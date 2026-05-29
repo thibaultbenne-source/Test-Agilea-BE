@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PilotFlow — Bureau d'Études</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f2f5;color:#1a2433}
+.topbar{background:#1a2433;color:#fff;height:52px;display:flex;align-items:center;padding:0 20px;gap:16px;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.logo{font-size:22px;font-weight:800;color:#f97316;letter-spacing:-1px}.logo span{color:#fff}
+.topbar-sub{font-size:13px;color:#94a3b8}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.topbar-search{background:#2d3748;border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:13px;width:200px;outline:none}
+.topbar-search::placeholder{color:#94a3b8}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+.layout{display:flex;padding-top:52px;min-height:100vh}
+.sidebar{width:215px;background:#fff;border-right:1px solid #e2e8f0;padding:12px 0;position:fixed;top:52px;bottom:0;overflow-y:auto}
+.s-sec{padding:8px 16px 2px;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase}
+.s-item{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:13px;color:#4a5568;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.s-item:hover{background:#f7f9fc;color:#1a2433}
+.s-item.active{background:#fff7ed;color:#f97316;border-left:3px solid #f97316;font-weight:600}
+.s-sep{height:1px;background:#e2e8f0;margin:6px 14px}
+.main{margin-left:215px;flex:1;display:flex;flex-direction:column}
+.bread{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 18px;display:flex;align-items:center;gap:8px;font-size:13px}
+.bread a{color:#94a3b8;cursor:pointer}.bread a:hover{color:#f97316}
+.bread-cur{color:#1a2433;font-weight:600}
+.statbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.st{display:flex;flex-direction:column;align-items:center}
+.st-v{font-size:22px;font-weight:800;color:#1a2433}
+.st-l{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
+.st.g .st-v{color:#16a34a}.st.o .st-v{color:#f97316}.st.r .st-v{color:#dc2626}
+.st-divider{width:1px;height:36px;background:#e2e8f0}
+.tbtn{border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;color:#4a5568;transition:all .15s}
+.tbtn:hover{background:#f7f9fc}.tbtn.pri{background:#f97316;color:#fff;border-color:#f97316;font-weight:600}.tbtn.pri:hover{background:#ea6c0a}
+.kw{overflow-x:auto;padding:14px;display:flex;gap:14px;min-height:calc(100vh - 148px);align-items:flex-start}
+.kcol{min-width:290px;max-width:290px;display:flex;flex-direction:column}
+.cbar{height:3px;border-radius:6px 6px 0 0}
+.ch{background:#fff;padding:10px 12px;display:flex;align-items:center;gap:7px;border:1px solid #e2e8f0;border-top:none;border-bottom:none}
+.ctitle{font-size:12px;font-weight:700;color:#1a2433;flex:1}
+.ccnt{background:#e2e8f0;color:#4a5568;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px}
+.ccnt.w{background:#fef3c7;color:#d97706}
+.cbody{background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;padding:7px;display:flex;flex-direction:column;gap:7px;min-height:60px}
+.card{background:#fff;border-radius:7px;padding:11px 11px 9px 14px;border:1px solid #e2e8f0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.card:hover{box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-1px);border-color:#cbd5e0}
+.clb{position:absolute;left:0;top:0;bottom:0;width:3px}
+.ctit{font-size:11px;font-weight:700;color:#1a2433;margin-bottom:7px}
+.badges{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px}
+.b{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.b-ns{background:#e2e8f0;color:#64748b}
+.b-ec{background:#dbeafe;color:#1d4ed8}
+.b-pr{background:#f1f5f9;color:#475569}
+.b-b0{background:#dcfce7;color:#16a34a}
+.b-b1{background:#fef9c3;color:#a16207}
+.b-b2{background:#fee2e2;color:#dc2626}
+.b-b3{background:#dc2626;color:#fff;animation:pulse 1.5s infinite}
+.b-tg{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.cdates{display:flex;align-items:center;gap:5px;font-size:10px;color:#64748b;margin-bottom:5px;flex-wrap:wrap}
+.cstats{display:flex;gap:8px;font-size:10px;color:#94a3b8;margin-bottom:5px}
+.cfoot{display:flex;align-items:center;justify-content:space-between}
+.mems{display:flex;gap:3px}
+.mc{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.cspr{font-size:10px;color:#94a3b8;font-weight:600}
+.bbar{height:3px;background:#e2e8f0;border-radius:2px;margin-bottom:5px;overflow:hidden}
+.bfill{height:100%;border-radius:2px;transition:width .3s}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center}
+.mbox{background:#fff;border-radius:12px;width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.mh{padding:18px 22px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
+.mtt{font-size:15px;font-weight:700}
+.mclose{background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;line-height:1;padding:0 4px}
+.mb{padding:22px}
+.ml{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.mv{font-size:14px;color:#1a2433}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.msec{margin-bottom:12px}
+.empty-col{text-align:center;padding:16px;color:#94a3b8;font-size:11px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e0;border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <div class="logo">Pilot<span>Flow</span></div>
+    <span class="topbar-sub">Bureau d'Études</span>
+    <div class="topbar-right">
+      <input class="topbar-search" id="searchInput" type="text" placeholder="🔍 Rechercher un projet..." oninput="filterCards(this.value)">
+      <div class="av" style="background:#f97316" title="MP">MP</div>
+      <div class="av" style="background:#3b82f6" title="JM">JM</div>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="s-sec">Plans d'action</div>
+      <div class="s-item active" onclick="setActive(this)">⊞ Kanban plans d'action</div>
+      <div class="s-item" onclick="setActive(this)">☰ Liste plans d'action</div>
+      <div class="s-item" onclick="setActive(this)">📈 Fever chart pipeline</div>
+      <div class="s-item" onclick="setActive(this)">📁 Fichiers plans d'action</div>
+      <div class="s-sep"></div>
+      <div class="s-sec">Tâches</div>
+      <div class="s-item" onclick="setActive(this)">⊞ Kanban tâches</div>
+      <div class="s-item" onclick="setActive(this)">☰ Liste tâches</div>
+      <div class="s-item" onclick="setActive(this)">⚖ Projection de l'encours</div>
+      <div class="s-sep"></div>
+      <div class="s-sec">Paramètres</div>
+      <div class="s-item" onclick="setActive(this)">ℹ Informations</div>
+      <div class="s-item" onclick="setActive(this)">👥 Participants</div>
+      <div class="s-item" onclick="setActive(this)">📋 Plans d'action</div>
+      <div class="s-item" onclick="setActive(this)">🔀 Étapes</div>
+      <div class="s-item" onclick="setActive(this)">📊 Règles d'encours</div>
+    </div>
+    <div class="main">
+      <div class="bread"><a>Pipelines</a> <span style="color:#cbd5e0">›</span> <span class="bread-cur">PIPELINE BUREAU D'ÉTUDES</span></div>
+      <div class="statbar" id="statbar"></div>
+      <div class="kw" id="kanban"></div>
+    </div>
+  </div>
+  <div id="modal" class="mo" style="display:none" onclick="if(event.target===this)closeModal()"></div>
+</div>
+
+<script>
+const MC = {'MP':'#f97316','JM':'#3b82f6','AL':'#10b981','SR':'#8b5cf6'};
+
+const PROJECTS = [
+  {id:'325914',c:'SIEMENS93',e:'sans',s:'nd',p:0,b:0,t:['Relevé','Elec/Autom'],d:'03/09',dur:'15j',f:'02/10',tk:'11(11)',te:0,tok:0,tb:0,m:['MP','JM'],sp:'5-S',col:'#8b5cf6'},
+  {id:'334023',c:'3A15MAMET',e:'sans',s:'nd',p:0,b:0,t:['Relevé','Elec/Autom'],d:'11/06',dur:'5j',f:'19/06',tk:'7(7)',te:0,tok:0,tb:0,m:['MP','JM'],sp:'1-S',col:'#8b5cf6'},
+  {id:'334091',c:'CEMOI',e:'sans',s:'nd',p:0,b:0,t:['Elec/Autom'],d:'30/07',dur:'15j',f:'28/08',tk:'5(5)',te:0,tok:0,tb:0,m:['MP','JM'],sp:'5-S',col:'#8b5cf6'},
+  {id:'334108',c:'JACQUOT',e:'sans',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#8b5cf6'},
+  {id:'334396',c:'FABRIES',e:'sans',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#6366f1'},
+  {id:'334397',c:'FABRIES (2)',e:'sans',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#a855f7'},
+  {id:'334406',c:'FAME',e:'sans',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#22d3ee'},
+  {id:'334805',c:'VMINDUSTRIES',e:'sans',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#f43f5e'},
+  {id:'330836',c:'EURENCO24',e:'gele',s:'nd',p:0,b:0,t:['Avenant'],d:'27/01',dur:'3j',f:'30/01',tk:'3(3)',te:0,tok:0,tb:0,m:['MP','JM'],sp:'1-S',col:'#64748b'},
+  {id:'330514',c:'ACTEMIUM49',e:'gele',s:'ec',p:0,b:1900,t:['Appro. anticipés'],d:'19/01',dur:'8j',f:'09/06',tk:'5(5)',te:1,tok:0,tb:0,m:['MP','JM'],sp:'2-S',col:'#64748b'},
+  {id:'333936',c:'ARCADIE81',e:'gele',s:'ec',p:0,b:4000,t:['SAV'],d:'13/04',dur:'2j',f:'01/06',tk:'1(1)',te:0,tok:0,tb:1,m:['MP','JM'],sp:'1-S',col:'#64748b'},
+  {id:'334107',c:'PONTHIER',e:'prep',s:'ec',p:0,b:0,t:['Elec/Autom'],d:'27/05',dur:'5j',f:'04/06',tk:'4(4)',te:1,tok:0,tb:0,m:['MP','JM'],sp:'2-S',col:'#f97316'},
+  {id:'333523',c:'CAREMAG',e:'prep',s:'ec',p:0,b:667,t:[],d:'30/03',dur:'6j',f:'05/06',tk:'4(4)',te:1,tok:0,tb:0,m:['MP','JM'],sp:'5-S',col:'#f97316'},
+  {id:'330792',c:'EURENCO24 (2)',e:'prep',s:'ec',p:0,b:700,t:[],d:'04/05',dur:'7j',f:'08/06',tk:'4(4)',te:1,tok:0,tb:0,m:['JM','MP'],sp:'1-S',col:'#f97316'},
+  {id:'333337',c:'LOGISTA72',e:'prep',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#f97316'},
+  {id:'333773',c:'UNILININSULATION',e:'pret',s:'ec',p:0,b:0,t:['Relevé'],d:'13/05',dur:'5j',f:'04/06',tk:'4(4)',te:0,tok:2,tb:0,m:['MP','JM'],sp:'2-S',col:'#3b82f6'},
+  {id:'334895',c:'CENTREYDES',e:'pret',s:'ec',p:0,b:0,t:[],d:'28/05',dur:'2j',f:'01/06',tk:'2(1)',te:0,tok:0,tb:0,m:['MP','JM'],sp:'1-S',col:'#3b82f6'},
+  {id:'334372',c:'NUTRITIONSOJA',e:'pret',s:'ec',p:0,b:300,t:['Relevé'],d:'27/05',dur:'3j',f:'02/06',tk:'4(4)',te:0,tok:2,tb:0,m:['JM','MP'],sp:'1-S',col:'#3b82f6'},
+  {id:'323613',c:'SIEMENS93 (Rangueil)',e:'pret',s:'nd',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#3b82f6'},
+  {id:'332498',c:'ENDEL64',e:'encours',s:'ec',p:35,b:120,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'331038',c:'BRUYNZEEL',e:'encours',s:'ec',p:60,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'327562',c:'LESDEUXGOURMANDS',e:'encours',s:'ec',p:20,b:250,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'333860',c:'NATURACARE',e:'encours',s:'ec',p:45,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'334003',c:'GETINGELACALHENE41',e:'encours',s:'ec',p:80,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'327779',c:'PROMASIDORGHANA',e:'encours',s:'ec',p:10,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'331486',c:'FOURNIER',e:'encours',s:'ec',p:55,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'332928',c:'ECMTECHNOLOGIES',e:'encours',s:'ec',p:70,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#10b981'},
+  {id:'334044',c:'CNIM31',e:'valid',s:'ec',p:90,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#8b5cf6'},
+  {id:'333484',c:'BENNEALGERIE',e:'valid',s:'ec',p:85,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#8b5cf6'},
+  {id:'334102',c:'PGFPARTNER',e:'valid',s:'ec',p:95,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#8b5cf6'},
+  {id:'334500',c:'SERM24',e:'valid',s:'ec',p:88,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#8b5cf6'},
+  {id:'333536',c:'FABRIQUE AVEYRONNAISE',e:'lanc',s:'ec',p:75,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#ec4899'},
+  {id:'333947',c:'SEALEDAIR',e:'lanc',s:'ec',p:82,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#ec4899'},
+  {id:'333063',c:'GODERTINDUSTRIE',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'332187',c:'PIONEERITALIE',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'332483',c:'TECNYXAUTOMATION',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'331592',c:'CLEXTRAL',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'333264',c:'VIESSMANN',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'334337',c:'BISCUITSSUD',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'330706',c:'FRIGOPOLIS',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+  {id:'333451',c:'CORUDO',e:'doss',s:'ec',p:0,b:0,t:[],d:'',dur:'',f:'',tk:'',te:0,tok:0,tb:0,m:[],sp:'',col:'#14b8a6'},
+];
+
+const COLS = [
+  {id:'sans',lbl:'Sans étape',col:'#8b5cf6',cnt:9},
+  {id:'gele',lbl:'0 - Dossier Gelé',col:'#64748b',cnt:3},
+  {id:'prep',lbl:'1 - Préparation',col:'#f97316',cnt:4},
+  {id:'pret',lbl:'2 - Prêt à Démarrer',col:'#3b82f6',cnt:4},
+  {id:'encours',lbl:'3 - En Cours',col:'#10b981',cnt:8},
+  {id:'valid',lbl:'4 - Validation Client',col:'#8b5cf6',cnt:4},
+  {id:'lanc',lbl:'5 - Lancement',col:'#ec4899',cnt:2},
+  {id:'doss',lbl:'6 - Dossier Technique',col:'#14b8a6',cnt:21},
+  {id:'term',lbl:'7 - Terminé',col:'#22c55e',cnt:143},
+];
+
+function bClass(b){if(b===0)return 'b-b0';if(b<=100)return 'b-b1';if(b<=500)return 'b-b2';return 'b-b3';}
+function bColor(b){if(b===0)return '#22c55e';if(b<=100)return '#eab308';if(b<=500)return '#f97316';return '#dc2626';}
+function bWidth(b){if(b===0)return 3;if(b>=1000)return 100;return Math.min(100,Math.round(b/10));}
+
+function card(p){
+  const mem=p.m.map(x=>'<div class="mc" style="background:'+(MC[x]||'#94a3b8')+'">'+x+'</div>').join('');
+  const tags=p.t.map(x=>'<span class="b b-tg">'+x+'</span>').join('');
+  const dates=p.d?'<div class="cdates"><span>📅 '+p.d+'</span>'+(p.dur?'<span>⏱ '+p.dur+'</span>':'')+'<span>🏁 '+p.f+'</span></div>':'';
+  const stats=p.tk?'<div class="cstats"><span>○ '+p.tk+'</span><span>↻ '+p.te+'</span><span>✓ '+p.tok+'</span><span>❄ '+p.tb+'</span></div>':'';
+  const buf='<div class="bbar"><div class="bfill" style="width:'+bWidth(p.b)+'%;background:'+bColor(p.b)+'"></div></div>';
+  return '<div class="card" data-id="'+p.id+'">'
+    +'<div class="clb" style="background:'+p.col+'"></div>'
+    +'<div class="ctit">'+p.id+' - '+p.c+'</div>'
+    +'<div class="badges">'
+    +'<span class="b '+(p.s==='ec'?'b-ec':'b-ns')+'">'+(p.s==='ec'?'EN COURS':'NON DÉMARRÉ')+'</span>'
+    +'<span class="b b-pr">Prog. '+p.p+'%</span>'
+    +'<span class="b '+bClass(p.b)+'">Buffer '+p.b+'%</span>'
+    +tags+'</div>'+buf+dates+stats
+    +'<div class="cfoot"><div class="mems">'+mem+'</div>'+(p.sp?'<span class="cspr">'+p.sp+'</span>':'')+'</div>'
+    +'</div>';
+}
+
+function openModal(id){
+  const p=PROJECTS.find(x=>x.id===id);if(!p)return;
+  const mo=document.getElementById('modal');
+  mo.innerHTML='<div class="mbox">'
+    +'<div class="mh"><div class="mtt">'+p.id+' — '+p.c+'</div>'
+    +'<button class="mclose" onclick="closeModal()">✕</button></div>'
+    +'<div class="mb"><div class="mgrid">'
+    +'<div><div class="ml">Statut</div><div class="mv">'+(p.s==='ec'?'🔵 En cours':'⚪ Non démarré')+'</div></div>'
+    +'<div><div class="ml">Progression</div><div class="mv">'+p.p+' %</div></div>'
+    +'<div><div class="ml">Buffer consommé</div><div class="mv" style="color:'+bColor(p.b)+';font-weight:700">'+p.b+' %</div></div>'
+    +'<div><div class="ml">Sprint</div><div class="mv">'+(p.sp||'—')+'</div></div>'
+    +(p.d?'<div><div class="ml">Début</div><div class="mv">'+p.d+'</div></div><div><div class="ml">Fin prévue</div><div class="mv">'+p.f+'</div></div>':'')
+    +'</div>'
+    +(p.b>0?'<div class="msec"><div class="ml">Indicateur buffer</div><div class="bbar" style="height:8px"><div class="bfill" style="width:'+bWidth(p.b)+'%;background:'+bColor(p.b)+'"></div></div></div>':'')
+    +(p.t.length?'<div class="msec"><div class="ml">Tags</div><div class="badges">'+p.t.map(x=>'<span class="b b-tg">'+x+'</span>').join('')+'</div></div>':'')
+    +(p.m.length?'<div class="msec"><div class="ml">Intervenants</div><div class="mems">'+p.m.map(x=>'<div class="mc" style="background:'+(MC[x]||'#94a3b8')+';width:28px;height:28px;font-size:11px">'+x+'</div>').join('')+'</div></div>':'')
+    +'</div></div>';
+  mo.style.display='flex';
+}
+
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function setActive(el){document.querySelectorAll('.s-item').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
+
+function filterCards(val){
+  const q=val.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id;
+    const p=PROJECTS.find(x=>x.id===id);
+    if(!p)return;
+    const match=(p.id+p.c).toLowerCase().includes(q);
+    card.style.display=match?'':'none';
+  });
+}
+
+function render(){
+  const nAlert=PROJECTS.filter(p=>p.b>500).length;
+  const nOk=PROJECTS.filter(p=>p.b===0).length;
+  const nMid=PROJECTS.filter(p=>p.b>0&&p.b<=500).length;
+
+  document.getElementById('statbar').innerHTML=
+    '<div class="st"><div class="st-v">'+PROJECTS.length+'</div><div class="st-l">Projets actifs</div></div>'
+    +'<div class="st-divider"></div>'
+    +'<div class="st g"><div class="st-v">'+nOk+'</div><div class="st-l">Buffer OK</div></div>'
+    +'<div class="st-divider"></div>'
+    +'<div class="st o"><div class="st-v">'+nMid+'</div><div class="st-l">Buffer élevé</div></div>'
+    +'<div class="st-divider"></div>'
+    +'<div class="st r"><div class="st-v">⚠ '+nAlert+'</div><div class="st-l">Alertes critiques</div></div>'
+    +'<div style="margin-left:auto;display:flex;gap:8px;align-items:center">'
+    +'<button class="tbtn">👁 Affichage</button>'
+    +'<button class="tbtn">🔽 Filtrer</button>'
+    +'<button class="tbtn pri">＋ Nouveau projet</button></div>';
+
+  const kanban=document.getElementById('kanban');
+  kanban.innerHTML=COLS.map(col=>{
+    const projs=PROJECTS.filter(p=>p.e===col.id);
+    const warn=projs.some(p=>p.b>500);
+    const cards=projs.map(p=>card(p)).join('');
+    const empty=projs.length===0?'<div class="empty-col">'+(col.id==='term'?'143 projets terminés ✓':'Aucun projet')+'</div>':'';
+    return '<div class="kcol">'
+      +'<div class="cbar" style="background:'+col.col+'"></div>'
+      +'<div class="ch"><span style="color:#94a3b8">▾</span>'
+      +'<span class="ctitle">'+col.lbl+'</span>'
+      +'<span class="ccnt'+(warn?' w':'')+'">'+col.cnt+'</span></div>'
+      +'<div class="cbody">'+cards+empty+'</div></div>';
+  }).join('');
+
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click',()=>openModal(card.dataset.id));
+  });
+}
+
+render();
+</script>
+</body>
+</html>
